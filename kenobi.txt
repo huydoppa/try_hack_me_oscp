@@ -1,0 +1,45 @@
+Samba là bộ chương trình tương thích Windows tiêu chuẩn dành cho Linux và Unix.  Nó cho phép người dùng cuối truy cập và sử dụng các tệp, máy in và các tài nguyên thường được chia sẻ khác trên mạng nội bộ hoặc internet của công ty.  Nó thường được gọi là hệ thống tệp mạng.
+Samba dựa trên giao thức máy khách / máy chủ chung của Khối thông báo máy chủ (SMB).  SMB chỉ được phát triển cho Windows, không có Samba, các nền tảng máy tính khác sẽ bị tách biệt khỏi các máy Windows, ngay cả khi chúng là một phần của cùng một mạng.
+Sử dụng nmap, chúng ta có thể liệt kê một máy cho các chia sẻ SMB.
+Nmap có khả năng chạy để tự động hóa nhiều tác vụ mạng.  Có một kịch bản để liệt kê lượt chia sẻ!
+command : nmap -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse 10.10.194.109
+smba chaỵ cổng 445 và 139
+command : smbclient //<ip>/anonymous
+Using the nmap command above, how many shares have been found? : 2
+Once you're connected, list the files on the share. What is the file can you see? : log.txt
+Bạn cũng có thể tải xuống đệ quy chia sẻ SMB. không nhập tên và passwd
+smbget -R smb://<ip>/anonymous 
+cổng 111 đang chạy dịch vụ rpcbind.  Đây chỉ là một máy chủ chuyển đổi số chương trình gọi thủ tục từ xa (RPC) thành địa chỉ chung.  Khi một dịch vụ RPC được khởi động, nó sẽ cho rpcbind biết địa chỉ mà nó đang lắng nghe và số chương trình RPC được chuẩn bị để phục vụ.
+command : nmap -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount 10.10.194.109
+What mount can we see? ; /var
+task 3 : Gain initial access with ProFtpd 
+ProFtpd là một máy chủ FTP mã nguồn mở và miễn phí, tương thích với các hệ thống Unix và Windows.  Nó cũng dễ bị tấn công trong các phiên bản phần mềm trước đây.
+Chúng tôi có thể sử dụng searchsploit để tìm các khai thác cho một phiên bản phần mềm cụ thể.
+Về cơ bản, Searchsploit chỉ là một công cụ tìm kiếm dòng lệnh cho mining-db.com.
+COMMAND searchsploit proftpd version
+
+TASK 4 :
+
+Permission	On Files	                                                             On Directories
+SUID Bit	Người dùng thực thi tệp với quyền của chủ sở hữu tệp	                           -
+SGID Bit	Người dùng thực thi tệp với sự cho phép của chủ sở hữu nhóm.      Tệp được tạo trong thư mục có cùng chủ sở hữu nhóm.
+Sticky Bit	No meaning	                                                  Người dùng không được xóa tệp khỏi người dùng khác.
+
+Các bit SUID có thể nguy hiểm, một số tệp nhị phân chẳng hạn như mật khẩu cần được chạy với các đặc quyền nâng cao (vì nó đặt lại mật khẩu của bạn trên hệ thống), tuy nhiên các tệp tùy chỉnh khác có bit SUID có thể dẫn đến tất cả các loại vấn đề.
+
+Để tìm kiếm hệ thống cho các loại tệp này, hãy chạy như sau: find / -perm -u = s -type f 2> / dev / null
+
+What file looks particularly out of the ordinary?  /usr/bin/menu
+Strings là một lệnh trên Linux tìm kiếm các chuỗi có thể đọc được của con người trên hệ nhị phân.
+Điều này cho chúng ta thấy tệp nhị phân đang chạy mà không có đường dẫn đầy đủ (ví dụ: không sử dụng / usr / bin / curl hoặc / usr / bin / uname).
+
+Khi tệp này chạy dưới dạng đặc quyền của người dùng gốc, chúng ta có thể thao túng đường dẫn của mình để đạt được một trình bao gốc.
+/tmp đều được sử dụng để lưu trữ dữ liệu mang tính tạm thời trong hệ thống Linux của bạn
+cd /tmp
+echo /bin/sh > curl
+chmod 777 curl
+export PATH=/tmp:$PATH
+Khi tệp này chạy với các đặc quyền của người dùng gốc, đường dẫn có thể được điều khiển để đạt được trình bao gốc.
+
+Chúng ta có thể sao chép shell / bin / sh vào một tệp có tên là curl, sau đó thay đổi quyền của tệp để có thể đọc, ghi và thực thi được cho tất cả người dùng.  Cuối cùng, chúng ta có thể thêm vị trí của tệp curl chứa shell vào đường dẫn hệ thống.
+các lệnh trên có nghĩa là chuyển tất cả các lệnh bin,sh vào cho curl => curl có tất cả quyền như root
