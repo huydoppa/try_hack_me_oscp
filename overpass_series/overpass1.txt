@@ -51,4 +51,5 @@ SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 cat /etc/hosts
+<p> thứ nhất là cái /etc/hosts nó có thể ghi đề mà check cái crontab là nó sẽ download cái overpass.thm/downloads/src/buildscript.sh rồi bash luôn vậy nên ở máy kali tạo 1 cái file /downloads/sec/buildscript.sh rồi chmod cho nó 777 để check được . Rồi sao nhỉ hmm cái buildscript.sh là 1 revershell xong rồi mở port để revershell </p>
 
